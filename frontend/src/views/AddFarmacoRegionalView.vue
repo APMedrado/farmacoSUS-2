@@ -11,8 +11,8 @@
         </div>
         <p v-if="medicamentoSearchResult" class="mt-2">{{ medicamentoSearchResult }}</p>
         <p v-if="medicamentoInfo" class="mt-2">
-          Nome: {{ medicamentoInfo.nome }}<br>
-          Código de Barras: {{ medicamentoInfo.codigoBarras }}
+          Nome: {{ medicamentoInfo.produto }}<br>
+          Código de Barras: {{ medicamentoInfo.codigo_barra }}
         </p>
       </div>
 
@@ -28,46 +28,48 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
       medicamentoSearch: '',
       medicamentoSearchResult: '',
       medicamentoInfo: null,
-      quantidade: 1,
-      medicamentosDisponiveis: [
-        { codigoBarras: '1234567890123', nome: 'Paracetamol' },
-        { codigoBarras: '2345678901234', nome: 'Ibuprofeno' },
-        { codigoBarras: '3456789012345', nome: 'Dipirona' }
-      ]
+      quantidade: 1
     };
   },
   methods: {
     searchMedicamento() {
-      const found = this.medicamentosDisponiveis.find(medicamento => medicamento.codigoBarras === this.medicamentoSearch);
-      if (found) {
-        this.medicamentoInfo = found;
-        this.medicamentoSearchResult = '';
-      } else {
-        this.medicamentoInfo = null;
-        this.medicamentoSearchResult = 'Medicamento não encontrado';
-      }
+      axios.get(`http://localhost:8000/api/farmacos/${this.medicamentoSearch}/`)
+        .then(response => {
+          this.medicamentoInfo = response.data;
+          this.medicamentoSearchResult = '';
+        })
+        .catch(error => {
+          console.error('Erro ao buscar medicamento: ', error);
+          this.medicamentoInfo = null;
+          this.medicamentoSearchResult = 'Medicamento não encontrado';
+        });
     },
     handleAddToRegionalStock() {
-      // Cria um objeto FormData para enviar os dados
-      const formData = new FormData();
-      formData.append('codigoBarras', this.medicamentoInfo.codigoBarras);
-      formData.append('quantidade', this.quantidade);
+      const payload = {
+        medicamento: this.medicamentoInfo.codigo_barra,
+        quantidade: this.quantidade
+      };
 
-      // Aqui você pode adicionar a lógica para enviar o FormData para um servidor via AJAX.
-      console.log('Form data:', formData);
-
-      // Limpar o formulário após o envio
-      this.medicamentoSearch = '';
-      this.medicamentoSearchResult = '';
-      this.medicamentoInfo = null;
-      this.quantidade = 1;
-      alert('Estoque regional atualizado com sucesso!');
+      axios.post('http://localhost:8000/api/estoque-regional/', payload)
+        .then(response => {
+          alert('Estoque regional atualizado com sucesso!');
+          this.medicamentoSearch = '';
+          this.medicamentoSearchResult = '';
+          this.medicamentoInfo = null;
+          this.quantidade = 1;
+        })
+        .catch(error => {
+          console.error('Erro ao adicionar ao estoque regional: ', error);
+          alert('Erro ao adicionar ao estoque regional.');
+        });
     }
   }
 };

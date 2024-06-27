@@ -68,7 +68,7 @@ export default {
   methods: {
     async searchPostoDistribuicao() {
       try {
-        const response = await axios.get(`http://localhost:8000/api/postos-distribuicao/${this.postoDistribuicaoSearch}`);
+        const response = await axios.get(`http://localhost:8000/api/postos-distribuicao/${this.postoDistribuicaoSearch}/`);
         this.postoDistribuicaoInfo = response.data;
         this.form.postoDistribuicao = response.data.cnes;
         this.postoDistribuicaoSearchResult = '';
@@ -87,7 +87,10 @@ export default {
       }
     },
     addMedicamento(medicamento) {
-      if (!this.form.medicamentos.some(m => m.codigo_barra === medicamento.codigo_barra)) {
+      const existingMed = this.form.medicamentos.find(m => m.codigo_barra === medicamento.codigo_barra);
+      if (existingMed) {
+        existingMed.quantidade += 1;
+      } else {
         this.form.medicamentos.push({ ...medicamento, quantidade: 1 });
       }
     },
@@ -96,10 +99,13 @@ export default {
     },
     async handleAddStock() {
       try {
-        await axios.post('http://localhost:8000/api/estoque-local/', {
-          medicamentos: this.form.medicamentos.map(med => ({ medicamento: med.codigo_barra, quantidade: med.quantidade })),
+        const estoqueData = this.form.medicamentos.map(med => ({
+          medicamento: med.codigo_barra,
+          quantidade: med.quantidade,
           posto_distribuicao: this.form.postoDistribuicao
-        });
+        }));
+
+        await axios.post('http://localhost:8000/api/estoque-local/batch/', estoqueData);
 
         // Limpar o formulário após o envio
         this.form = {

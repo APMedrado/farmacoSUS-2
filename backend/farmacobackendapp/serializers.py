@@ -11,16 +11,34 @@ class FarmacoSerializer(DocumentSerializer):
             'codigo_barra': {'read_only': False}
         }
 
-class EstoqueLocalSerializer(DocumentSerializer):
+class PostoDistribuicaoSerializer(DocumentSerializer):
+    class Meta:
+        model = PostoDistribuicao
+        fields = '__all__'
+        extra_kwargs = {
+            'cnes': {'read_only': False}
+        }
+
+class EstoqueLocalCreateSerializer(DocumentSerializer):
     class Meta:
         model = EstoqueLocal
         fields = '__all__'
         extra_kwargs = {
-            'medicamento': {'read_only': False},
-            'posto_distribuicao': {'read_only': False}
+            'medicamento': {'required': True},
+            'posto_distribuicao': {'required': True}
         }
 
+class EstoqueLocalSerializer(DocumentSerializer):
+    medicamento = FarmacoSerializer()
+    posto_distribuicao = PostoDistribuicaoSerializer()
+
+    class Meta:
+        model = EstoqueLocal
+        fields = '__all__'
+
 class EstoqueRegionalSerializer(DocumentSerializer):
+    medicamento = FarmacoSerializer()
+    
     class Meta:
         model = EstoqueRegional
         fields = '__all__'
@@ -52,12 +70,4 @@ class RegistroEntregaSerializer(DocumentSerializer):
             'beneficiario': {'read_only': False},
             'receita_medico': {'read_only': False},
             'posto_distribuicao': {'read_only': False}
-        }
-
-class PostoDistribuicaoSerializer(DocumentSerializer):
-    class Meta:
-        model = PostoDistribuicao
-        fields = '__all__'
-        extra_kwargs = {
-            'cnes': {'read_only': False}
         }
