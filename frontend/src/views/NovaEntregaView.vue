@@ -185,10 +185,12 @@ export default {
       }
     },
     searchMedico() {
-      const found = this.medicosDisponiveis.find(medico => medico.crm === this.medicoSearch);
-      if (found) {
-        if (found.situacao === 'Ativo') {
-          this.medicoInfo = found;
+      // Fazendo a requisição GET para buscar o médico pelo CRM
+      axios.get(`http://localhost:8000/api/medicos/?crm=${this.medicoSearch}`)
+        .then(response => {
+      if (response.data) {
+        if (response.data.situacao === 'Ativo') {
+          this.medicoInfo = response.data;
           this.form.medico = this.medicoSearch;
           this.medicoSearchResult = '';
         } else {
@@ -199,6 +201,12 @@ export default {
         this.medicoInfo = null;
         this.medicoSearchResult = 'Médico não encontrado';
       }
+      })
+      .catch(error => {
+        console.error('Erro ao buscar médico: ', error);
+        this.medicoInfo = null;
+        this.medicoSearchResult = 'Erro ao buscar médico';
+      });
     },
     searchMedicamento() {
       if (!this.form.postoDistribuicao || !this.form.postoDistribuicao.cnes) {
