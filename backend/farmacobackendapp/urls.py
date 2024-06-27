@@ -5,8 +5,8 @@ from . import views
 
 urlpatterns = [
     path('farmacos/', views.FarmacoList.as_view(), name='farmaco-list'),
+    path('farmacos/batch/', views.CreateFarmacoBatch, name='create-farmaco-batch'),
     path('farmacos/<str:codigo_barra>/', views.FarmacoDetail.as_view(), name='farmaco-detail'),
-    path('farmacos/batch/', views.batch_create_farmacos, name='batch-create-farmacos'),
     path('estoque-local/', views.EstoqueLocalList.as_view(), name='estoque-local-list'),
     path('estoque-local/batch/', views.CreateEstoqueLocalBatch, name='create-estoque-local-batch'),
     path('estoque-regional/', views.EstoqueRegionalList.as_view(), name='estoque-regional-list'),

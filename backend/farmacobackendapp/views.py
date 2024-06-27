@@ -131,15 +131,31 @@ class PostoDistribuicaoDetail(generics.RetrieveAPIView):
     serializer_class = PostoDistribuicaoSerializer
     lookup_field = 'cnes'
 
+
+
 @api_view(['POST'])
-def batch_create_farmacos(request):
-    if isinstance(request.data, list):
-        tam = len(request.data)
-        for entry in request.data:
-            try:
-                farmaco = Farmaco(entry)
-                farmaco.save()
-            except Exception :
-                return Response({"Um item não é um farmaco"}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({'nSaved': tam}, status=status.HTTP_201_CREATED)        
-                
+def CreateFarmacoBatch(request):
+    if not isinstance(request.data, list):
+        return Response({"error": "Os dados enviados não são uma lista"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    if len(request.data) == 0:
+        return Response({"error": "A lista de dados está vazia"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    n_saved = 0
+    errors = []
+
+    for entry in request.data:
+        try:
+            farmaco_serializer = FarmacoSerializer(data=entry)
+            if farmaco_serializer.is_valid():
+                farmaco_serializer.save()
+                n_saved += 1
+            else:
+                errors.append(farmaco_serializer.errors)
+        except Exception as e:
+            errors.append(str(e))  # Captura de erros específicos
+            
+    if errors:
+        return Response({"errors": errors}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response({'nSaved': n_saved}, status=status.HTTP_201_CREATED)
