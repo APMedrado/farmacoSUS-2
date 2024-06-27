@@ -144,9 +144,12 @@ class PostoDistribuicaoDetail(generics.RetrieveAPIView):
 @api_view(['POST'])
 def batch_create_farmacos(request):
     if isinstance(request.data, list):
-        serializer = FarmacoSerializer(data=request.data, many=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    return Response({"detail": "Invalid data format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
+        tam = len(request.data)
+        for entry in request.data:
+            try:
+                farmaco = Farmaco(entry)
+                farmaco.save()
+            except Exception :
+                return Response({"Um item não é um farmaco"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'nSaved': tam}, status=status.HTTP_201_CREATED)        
+                
