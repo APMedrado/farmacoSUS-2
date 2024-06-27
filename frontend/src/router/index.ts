@@ -8,6 +8,11 @@ import AddFarmacoRegionalView from '@/views/AddFarmacoRegionalView.vue'
 import NovoFarmacoView from '@/views/NovoFarmacoView.vue'
 import NovaEntregaView from '@/views/NovaEntregaView.vue'
 import FarmacoBatchInput from '@/views/FarmacoBatchInput.vue'
+import ListarPacientesView from '@/views/ListarPacientesView.vue'
+import NovoPacienteView from '@/views/NovoPacienteView.vue'
+import ListarMedicosView from '@/views/ListarMedicosView.vue'
+import NovoMedicoView from '@/views/NovoMedicoView.vue'
+import ListarEntregasView from '@/views/ListarEntregasView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -48,7 +53,32 @@ const router = createRouter({
       component: FarmacoBatchInput
     },
     {
-      path: '/entrega',
+      path: '/pacientes',
+      name: 'listar-pacientes',
+      component: ListarPacientesView
+    },
+    {
+      path: '/pacientes/novo',
+      name: 'novo-paciente',
+      component: NovoPacienteView
+    },
+    {
+      path: '/medicos',
+      name: 'listar-medicos',
+      component: ListarMedicosView
+    },
+    {
+      path: '/medicos/novo',
+      name: 'novo-medico',
+      component: NovoMedicoView
+    },
+    {
+      path: '/registros-entrega',
+      name: 'listar-registros-entrega',
+      component: ListarEntregasView
+    },
+    {
+      path: '/registros-entrega/novo',
       name: 'nova-entrega',
       component: NovaEntregaView
     },
