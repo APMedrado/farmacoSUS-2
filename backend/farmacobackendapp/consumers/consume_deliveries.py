@@ -1,9 +1,12 @@
 import os
+import sys
 import django
 import json
 import logging
 
-# Defina a variável de ambiente DJANGO_SETTINGS_MODULE para apontar para o módulo de configurações do Django
+# Adicione o diretório /app ao caminho do Python
+sys.path.append('/app')
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'farmacobackend.settings')
 django.setup()
 

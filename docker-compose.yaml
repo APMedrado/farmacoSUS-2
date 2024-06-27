@@ -64,11 +64,14 @@ services:
     networks:
       - backend_network
 
+
   kafka_consumer:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: kafka_consumer
+    environment:
+      - DJANGO_SETTINGS_MODULE=farmacobackend.settings
     depends_on:
       - kafka
       - django
