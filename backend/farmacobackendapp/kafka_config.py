@@ -48,7 +48,7 @@ def consume_delivery_messages(process_message_callback):
         pass
     finally:
         consumer.close()
-
+'''
 def create_topic(topic_name):
     admin_client = KafkaAdminClient(bootstrap_servers=KAFKA_BROKER)
     topic_list = [NewTopic(name=topic_name, num_partitions=1, replication_factor=1)]
@@ -59,3 +59,4 @@ def create_topic(topic_name):
         logging.error(f'Error creating topic "{topic_name}": {e}')
     finally:
         admin_client.close()
+'''

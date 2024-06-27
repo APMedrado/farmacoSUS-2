@@ -14,6 +14,7 @@ from farmacobackendapp.models import EstoqueLocal, Farmaco, PostoDistribuicao
 from farmacobackendapp.kafka_config import consume_delivery_messages
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 def process_delivery_message(data):
     try:
@@ -30,5 +31,5 @@ def process_delivery_message(data):
         logger.error(f'Erro ao processar mensagem de entrega: {e}')
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+    logger.info('Iniciando o consumidor de mensagens')
     consume_delivery_messages(process_delivery_message)
