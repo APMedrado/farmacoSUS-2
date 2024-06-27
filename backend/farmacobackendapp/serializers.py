@@ -1,5 +1,6 @@
-from rest_framework_mongoengine.serializers import DocumentSerializer
-from .models import Farmaco, EstoqueLocal, EstoqueRegional, Paciente, Medico, RegistroEntrega, PostoDistribuicao
+from rest_framework import serializers
+from rest_framework_mongoengine.serializers import DocumentSerializer, EmbeddedDocumentSerializer
+from .models import Farmaco, EstoqueLocal, EstoqueRegional, Paciente, Medico, RegistroEntrega, PostoDistribuicao, MedicamentoQuantidade
 
 # Serializers: Úteis para converter entre JSON e objeto do banco de dados
 
@@ -70,7 +71,16 @@ class MedicoSerializer(DocumentSerializer):
             'crm': {'read_only': False}
         }
 
+class MedicamentoQuantidadeSerializer(serializers.Serializer):
+    medicamento = serializers.CharField()
+    quantidade = serializers.IntegerField()
+
 class RegistroEntregaSerializer(DocumentSerializer):
+    beneficiario = PacienteSerializer()
+    receita_medico = MedicoSerializer()
+    posto_distribuicao = PostoDistribuicaoSerializer()
+    medicamentos = MedicamentoQuantidadeSerializer(many=True)
+
     class Meta:
         model = RegistroEntrega
         fields = '__all__'

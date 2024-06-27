@@ -12,7 +12,7 @@
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <button class="btn btn-primary me-md-3">
-              <RouterLink class="dropdown-item" to="/entrega">Registrar Nova Entrega</RouterLink>
+              <RouterLink class="dropdown-item" to="/registros-entrega/novo">Registrar Nova Entrega</RouterLink>
             </button>
           </li>
           <li class="nav-item dropdown">
@@ -39,9 +39,9 @@
               Histórico
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <li><RouterLink class="dropdown-item" to="#">Registros de Entrega</RouterLink></li>
-              <li><RouterLink class="dropdown-item" to="#">Pacientes Registrados</RouterLink></li>
-              <li><RouterLink class="dropdown-item" to="#">Médicos Registrados</RouterLink></li>
+              <li><RouterLink class="dropdown-item" to="/registros-entrega">Registros de Entrega</RouterLink></li>
+              <li><RouterLink class="dropdown-item" to="/pacientes">Pacientes Registrados</RouterLink></li>
+              <li><RouterLink class="dropdown-item" to="/medicos">Médicos Registrados</RouterLink></li>
             </ul>
           </li>
         </ul>

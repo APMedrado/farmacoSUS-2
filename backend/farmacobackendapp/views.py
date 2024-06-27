@@ -114,9 +114,19 @@ class PacienteList(generics.ListCreateAPIView):
     queryset = Paciente.objects.all()
     serializer_class = PacienteSerializer
 
+class PacienteDetail(generics.RetrieveAPIView):
+    queryset = Paciente.objects.all()
+    serializer_class = PacienteSerializer
+    lookup_field = 'cpf'
+
 class MedicoList(generics.ListCreateAPIView):
     queryset = Medico.objects.all()
     serializer_class = MedicoSerializer
+
+class MedicoDetail(generics.RetrieveAPIView):
+    queryset = Medico.objects.all()
+    serializer_class = MedicoSerializer
+    lookup_field = 'crm'
 
 class RegistroEntregaList(generics.ListCreateAPIView):
     queryset = RegistroEntrega.objects.all()

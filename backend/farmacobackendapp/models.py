@@ -40,8 +40,8 @@ class Paciente(me.Document):
     cpf = me.StringField(required=True, primary_key=True)
     nome = me.StringField(required=True, max_length=100)
     data_nascimento = me.DateField(required=True)
-    bolsa_familia = me.BooleanField(required=True)
-    cadastro_unico = me.BooleanField(required=True)
+    bolsa_familia = me.StringField(required=True, max_length=100)
+    cadastro_unico = me.StringField(required=True, max_length=100)
 
     def __str__(self):
         return self.nome
@@ -55,8 +55,12 @@ class Medico(me.Document):
     def __str__(self):
         return self.nome
 
+class MedicamentoQuantidade(me.EmbeddedDocument):
+    medicamento = me.ReferenceField(Farmaco, required=True)
+    quantidade = me.IntField(required=True)
+
 class RegistroEntrega(me.Document):
-    medicamentos = me.ListField(me.ReferenceField(Farmaco))
+    medicamentos = me.ListField(me.EmbeddedDocumentField(MedicamentoQuantidade))
     beneficiario = me.ReferenceField(Paciente, required=True)
     receita_medico = me.ReferenceField(Medico, required=True)
     receita_data = me.DateField(required=True)
