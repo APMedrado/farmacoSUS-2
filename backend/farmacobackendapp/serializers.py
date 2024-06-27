@@ -36,6 +36,14 @@ class EstoqueLocalSerializer(DocumentSerializer):
         model = EstoqueLocal
         fields = '__all__'
 
+class EstoqueRegionalCreateSerializer(DocumentSerializer):
+    class Meta:
+        model = EstoqueRegional
+        fields = '__all__'
+        extra_kwargs = {
+            'medicamento': {'required': True}
+        }
+
 class EstoqueRegionalSerializer(DocumentSerializer):
     medicamento = FarmacoSerializer()
     

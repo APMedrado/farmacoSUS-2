@@ -75,15 +75,40 @@ def CreateEstoqueLocalBatch(request):
 class EstoqueRegionalList(generics.ListCreateAPIView):
     queryset = EstoqueRegional.objects.all()
     serializer_class = EstoqueRegionalSerializer
-    
-    def create(self, request, *args, **kwargs):
-        try:
-            response = super().create(request, *args, **kwargs)
-            logger.info('Medicamento adicionado ao estoque regional com sucesso: %s', response.data)
-            return response
-        except Exception as e:
-            logger.error('Erro ao adicionar medicamento ao estoque regional: %s', str(e))
-            return Response({'detail': 'Erro ao adicionar medicamento ao estoque regional'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+def CreateEstoqueRegionalBatch(request):
+    if isinstance(request.data, list):
+        updated_entries = []
+        for entry in request.data:
+            medicamento_codigo = entry.get('medicamento')
+            quantidade = entry.get('quantidade')
+
+            if not medicamento_codigo or not quantidade:
+                return Response({"detail": "Missing data in request"}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                # Encontre o medicamento pelo código de barras
+                medicamento = Farmaco.objects.get(codigo_barra=medicamento_codigo)
+                
+                # Verifique se existe uma entrada no estoque regional para esse medicamento
+                try:
+                    estoque_regional = EstoqueRegional.objects.get(medicamento=medicamento)
+                    estoque_regional.quantidade += quantidade  # Atualiza a quantidade
+                    estoque_regional.save()  # Salva a entrada atualizada
+                    updated_entries.append(estoque_regional)
+                except EstoqueRegional.DoesNotExist:
+                    # Crie uma nova entrada no estoque regional
+                    estoque_regional = EstoqueRegional(medicamento=medicamento, quantidade=quantidade)
+                    estoque_regional.save()
+                    updated_entries.append(estoque_regional)
+
+            except Farmaco.DoesNotExist:
+                return Response({"detail": "Medicamento não encontrado"}, status=status.HTTP_400_BAD_REQUEST)
+
+        response_serializer = EstoqueRegionalSerializer(updated_entries, many=True)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+    return Response({"detail": "Invalid data format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
 
 class PacienteList(generics.ListCreateAPIView):
     queryset = Paciente.objects.all()
