@@ -55,17 +55,13 @@ class Medico(me.Document):
     def __str__(self):
         return self.nome
 
-class MedicamentoQuantidade(me.EmbeddedDocument):
-    medicamento = me.ReferenceField(Farmaco, required=True)
-    quantidade = me.IntField(required=True)
-
 class RegistroEntrega(me.Document):
-    medicamentos = me.ListField(me.EmbeddedDocumentField(MedicamentoQuantidade))
     beneficiario = me.ReferenceField(Paciente, required=True)
     receita_medico = me.ReferenceField(Medico, required=True)
     receita_data = me.DateField(required=True)
     posto_distribuicao = me.ReferenceField(PostoDistribuicao, required=True)
     data_entrega = me.DateField(required=True)
+    medicamentos = me.ListField(me.DictField(), required=True)
 
     def __str__(self):
-        return f"Entrega para {self.beneficiario} em {self.data_entrega}"
+        return f"{self.beneficiario.nome} - {self.data_entrega}"

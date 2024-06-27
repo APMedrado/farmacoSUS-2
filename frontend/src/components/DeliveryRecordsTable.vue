@@ -16,9 +16,9 @@
           <td>{{ registro.beneficiario.nome }}</td>
           <td>{{ registro.receita_medico.nome }}</td>
           <td>
-            <ul>
-              <li v-for="medicamento in registro.medicamentos" :key="medicamento.medicamento.codigo_barra">
-                {{ medicamento.medicamento.produto }} ({{ medicamento.quantidade }})
+            <ul class="list-unstyled">
+              <li v-for="medicamento in registro.medicamentos" :key="medicamento.codigo_barra">
+                {{ medicamento.produto }} - {{ medicamento.quantidade }} un
               </li>
             </ul>
           </td>
@@ -43,7 +43,7 @@ export default {
   },
   methods: {
     fetchRegistros() {
-      axios.get('http://localhost:8000/api/registro-entrega/')
+      axios.get('http://localhost:8000/api/registros-entregas/')
         .then(response => {
           this.registros = response.data;
         })

@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from rest_framework_mongoengine.serializers import DocumentSerializer, EmbeddedDocumentSerializer
-from .models import Farmaco, EstoqueLocal, EstoqueRegional, Paciente, Medico, RegistroEntrega, PostoDistribuicao, MedicamentoQuantidade
+from rest_framework_mongoengine.serializers import DocumentSerializer
+from .models import Farmaco, EstoqueLocal, EstoqueRegional, Paciente, Medico, PostoDistribuicao, RegistroEntrega
 
 # Serializers: Úteis para converter entre JSON e objeto do banco de dados
 
@@ -71,21 +71,29 @@ class MedicoSerializer(DocumentSerializer):
             'crm': {'read_only': False}
         }
 
-class MedicamentoQuantidadeSerializer(serializers.Serializer):
-    medicamento = serializers.CharField()
+class MedicamentoEntregaSerializer(serializers.Serializer):
+    codigo_barra = serializers.CharField()
     quantidade = serializers.IntegerField()
+    produto = serializers.SerializerMethodField()
+
+    def get_produto(self, obj):
+        try:
+            medicamento = Farmaco.objects.get(codigo_barra=obj['codigo_barra'])
+            return medicamento.produto
+        except Farmaco.DoesNotExist:
+            return None
 
 class RegistroEntregaSerializer(DocumentSerializer):
     beneficiario = PacienteSerializer()
     receita_medico = MedicoSerializer()
     posto_distribuicao = PostoDistribuicaoSerializer()
-    medicamentos = MedicamentoQuantidadeSerializer(many=True)
+    medicamentos = MedicamentoEntregaSerializer(many=True)
 
     class Meta:
         model = RegistroEntrega
         fields = '__all__'
-        extra_kwargs = {
-            'beneficiario': {'read_only': False},
-            'receita_medico': {'read_only': False},
-            'posto_distribuicao': {'read_only': False}
-        }
+
+class RegistroEntregaCreateSerializer(DocumentSerializer):
+    class Meta:
+        model = RegistroEntrega
+        fields = '__all__'

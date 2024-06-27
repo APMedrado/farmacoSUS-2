@@ -66,7 +66,7 @@
         <label class="form-label">Medicamentos Selecionados</label>
         <ul class="list-group">
           <li v-for="(medicamento, index) in form.medicamentos" :key="index" class="list-group-item d-flex justify-content-between align-items-center">
-            {{ medicamento.nome }} ({{ medicamento.quantidade }})
+            {{ medicamento.nome }} ({{ medicamento.codigo_barra }}) - {{ medicamento.quantidade }} un
             <div>
               <input type="number" class="form-control d-inline-block me-2" v-model.number="medicamento.quantidade" min="1" style="width: 80px;">
               <button type="button" class="btn btn-danger btn-sm" @click="removeMedicamento(index)">Remover</button>
@@ -119,136 +119,138 @@ export default {
     };
   },
   methods: {
-  getCurrentDate() {
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const year = today.getFullYear();
-    return `${year}-${month}-${day}`;
-  },
-  formatCpf() {
-    let cpf = this.beneficiarioSearch.replace(/\D/g, '');
-    cpf = cpf.slice(0, 11);
-    const formattedCpf = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-    this.beneficiarioSearch = formattedCpf;
-  },
-  async searchBeneficiario() {
-    const cpfUnformatted = this.beneficiarioSearch.replace(/\D/g, '');
-    try {
-      const response = await axios.get(`http://localhost:8000/api/pacientes/${cpfUnformatted}/`);
-      this.beneficiarioInfo = response.data;
-      this.form.beneficiario = cpfUnformatted;
-      this.beneficiarioSearchResult = '';
-    } catch (error) {
-      this.beneficiarioInfo = null;
-      this.beneficiarioSearchResult = 'Beneficiário não encontrado';
-    }
-  },
-  async searchPostoDistribuicao() {
-    try {
-      const response = await axios.get(`http://localhost:8000/api/postos-distribuicao/${this.postoDistribuicaoSearch}/`);
-      this.form.postoDistribuicao = response.data;
-      this.postoDistribuicaoSearchResult = '';
-      this.form.medicamentos = []; // Resetar lista de medicamentos ao selecionar novo posto
-    } catch (error) {
-      this.form.postoDistribuicao = null;
-      this.postoDistribuicaoSearchResult = 'Posto de distribuição não encontrado';
-    }
-  },
-  async searchMedico() {
-    try {
-      const response = await axios.get(`http://localhost:8000/api/medicos/${this.medicoSearch}/`);
-      this.medicoInfo = response.data;
-      this.form.medico = this.medicoSearch;
-      this.medicoSearchResult = '';
-    } catch (error) {
-      this.medicoInfo = null;
-      this.medicoSearchResult = 'Médico não encontrado';
-    }
-  },
-  async searchMedicamento() {
-    if (!this.form.postoDistribuicao || !this.form.postoDistribuicao.cnes) {
-      this.medicamentoSearchResult = 'Por favor, selecione um posto de distribuição válido primeiro';
-      return;
-    }
-    try {
-      const response = await axios.get(`http://localhost:8000/api/estoque-local/?posto_distribuicao=${this.form.postoDistribuicao.cnes}&medicamento=${this.medicamentoSearch}`);
-      const found = response.data.find(medicamento => medicamento.medicamento.codigo_barra === this.medicamentoSearch);
-      if (found) {
-        this.addMedicamento(found);
-        this.medicamentoSearchResult = '';
-      } else {
-        this.medicamentoSearchResult = 'Medicamento não encontrado ou fora de estoque';
+    getCurrentDate() {
+      const today = new Date();
+      const day = String(today.getDate()).padStart(2, '0');
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const year = today.getFullYear();
+      return `${year}-${month}-${day}`;
+    },
+    formatCpf() {
+      let cpf = this.beneficiarioSearch.replace(/\D/g, '');
+      cpf = cpf.slice(0, 11);
+      const formattedCpf = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+      this.beneficiarioSearch = formattedCpf;
+    },
+    searchBeneficiario() {
+      const cpfUnformatted = this.beneficiarioSearch.replace(/\D/g, '');
+      axios.get(`http://localhost:8000/api/pacientes/${cpfUnformatted}/`)
+        .then(response => {
+          this.beneficiarioInfo = response.data;
+          this.form.beneficiario = cpfUnformatted;
+          this.beneficiarioSearchResult = '';
+        })
+        .catch(error => {
+          console.error('Erro ao buscar beneficiário: ', error);
+          this.beneficiarioInfo = null;
+          this.beneficiarioSearchResult = 'Beneficiário não encontrado';
+        });
+    },
+    searchPostoDistribuicao() {
+      axios.get(`http://localhost:8000/api/postos-distribuicao/${this.postoDistribuicaoSearch}/`)
+        .then(response => {
+          this.form.postoDistribuicao = response.data;
+          this.postoDistribuicaoSearchResult = '';
+          this.form.medicamentos = []; // Resetar lista de medicamentos ao selecionar novo posto
+        })
+        .catch(error => {
+          console.error('Erro ao buscar posto de distribuição: ', error);
+          this.form.postoDistribuicao = null;
+          this.postoDistribuicaoSearchResult = 'Posto de distribuição não encontrado';
+        });
+    },
+    searchMedico() {
+      axios.get(`http://localhost:8000/api/medicos/${this.medicoSearch}/`)
+        .then(response => {
+          this.medicoInfo = response.data;
+          this.form.medico = this.medicoSearch;
+          this.medicoSearchResult = '';
+        })
+        .catch(error => {
+          console.error('Erro ao buscar médico: ', error);
+          this.medicoInfo = null;
+          this.medicoSearchResult = 'Médico não encontrado';
+        });
+    },
+    searchMedicamento() {
+      if (!this.form.postoDistribuicao || !this.form.postoDistribuicao.cnes) {
+        this.medicamentoSearchResult = 'Por favor, selecione um posto de distribuição válido primeiro';
+        return;
       }
-    } catch (error) {
-      this.medicamentoSearchResult = 'Erro ao buscar medicamento';
-    }
-  },
-  addMedicamento(medicamento) {
-    if (medicamento && !this.form.medicamentos.some(m => m.codigo_barra === medicamento.medicamento.codigo_barra)) {
-      this.form.medicamentos.push({ nome: medicamento.medicamento.produto, codigo_barra: medicamento.medicamento.codigo_barra, quantidade: 1 });
+      const cnes = this.form.postoDistribuicao.cnes;
+      axios.get(`http://localhost:8000/api/estoque-local/?posto_distribuicao=${cnes}&medicamento=${this.medicamentoSearch}`)
+        .then(response => {
+          const medicamentoEncontrado = response.data.find(item => item.medicamento.codigo_barra === this.medicamentoSearch);
+          if (medicamentoEncontrado) {
+            this.addMedicamento(medicamentoEncontrado.medicamento);
+            this.medicamentoSearchResult = '';
+          } else {
+            this.medicamentoSearchResult = 'Medicamento não encontrado ou fora de estoque';
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao buscar medicamento: ', error);
+          this.medicamentoSearchResult = 'Erro ao buscar medicamento';
+        });
+    },
+    addMedicamento(medicamento) {
+      if (medicamento && !this.form.medicamentos.some(m => m.codigo_barra === medicamento.codigo_barra)) {
+        this.form.medicamentos.push({ codigo_barra: medicamento.codigo_barra, nome: medicamento.produto, quantidade: 1 });
+        this.medicamentoSearch = '';
+      }
+    },
+    removeMedicamento(index) {
+      this.form.medicamentos.splice(index, 1);
+    },
+    handleSubmit() {
+      const entregaData = {
+        beneficiario: this.form.beneficiario,
+        receita_medico: this.form.medico,
+        receita_data: this.form.dataReceita,
+        posto_distribuicao: this.form.postoDistribuicao.cnes,
+        data_entrega: this.form.dataEntrega,
+        medicamentos: this.form.medicamentos.map(m => ({
+          codigo_barra: m.codigo_barra,
+          quantidade: m.quantidade
+        }))
+      };
+
+      axios.post('http://localhost:8000/api/registros-entregas/', entregaData)
+        .then(response => {
+          alert('Entrega registrada com sucesso!');
+          this.resetForm();
+        })
+        .catch(error => {
+          console.error('Erro ao registrar entrega: ', error);
+          alert('Erro ao registrar entrega');
+        });
+    },
+    resetForm() {
+      this.form = {
+        medicamentos: [],
+        beneficiario: '',
+        medico: '',
+        dataReceita: '',
+        postoDistribuicao: null,
+        dataEntrega: this.getCurrentDate()
+      };
+      this.beneficiarioSearch = '';
+      this.beneficiarioSearchResult = '';
+      this.beneficiarioInfo = null;
+      this.postoDistribuicaoSearch = '';
+      this.postoDistribuicaoSearchResult = '';
+      this.medicoSearch = '';
+      this.medicoSearchResult = '';
+      this.medicoInfo = null;
       this.medicamentoSearch = '';
+      this.medicamentoSearchResult = '';
     }
-  },
-  removeMedicamento(index) {
-    this.form.medicamentos.splice(index, 1);
-  },
-  async handleSubmit() {
-    if (!this.form.beneficiario || !this.form.medico || !this.form.postoDistribuicao || this.form.medicamentos.length === 0) {
-      alert('Por favor, preencha todos os campos obrigatórios');
-      return;
-    }
-
-    const novoRegistro = {
-      medicamentos: this.form.medicamentos.map(med => ({medicamento: med.codigo_barra, quantidade: med.quantidade})),
-      beneficiario: this.form.beneficiario,
-      receita_medico: this.form.medico,
-      receita_data: this.form.dataReceita,
-      posto_distribuicao: this.form.postoDistribuicao.cnes,
-      data_entrega: this.form.dataEntrega
-    };
-
-    try {
-      const response = await axios.post('http://localhost:8000/api/registro-entrega/', novoRegistro);
-      console.log(response.data);
-      alert('Entrega registrada com sucesso!');
-      this.resetForm();
-    } catch (error) {
-      console.error(error);
-      alert('Erro ao registrar entrega');
-    }
-  },
-  resetForm() {
-    this.form = {
-      medicamentos: [],
-      beneficiario: '',
-      medico: '',
-      dataReceita: '',
-      postoDistribuicao: null,
-      dataEntrega: this.getCurrentDate()  // Redefine com a data atual
-    };
-    this.beneficiarioSearch = '';
-    this.beneficiarioSearchResult = '';
-    this.beneficiarioInfo = null;
-    this.postoDistribuicaoSearch = '';
-    this.postoDistribuicaoSearchResult = '';
-    this.medicoSearch = '';
-    this.medicoSearchResult = '';
-    this.medicoInfo = null;
-    this.medicamentoSearch = '';
-    this.medicamentoSearchResult = '';
   }
-}
 };
 </script>
 
 <style scoped>
 .container {
   max-width: 600px;
-}
-.dropdown-menu.show {
-  display: block;
-  max-height: 150px;
-  overflow-y: auto;
 }
 </style>

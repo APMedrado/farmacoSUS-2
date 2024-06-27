@@ -2,9 +2,10 @@ from rest_framework_mongoengine import generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Farmaco, EstoqueLocal, EstoqueRegional, Paciente, Medico, RegistroEntrega, PostoDistribuicao
-from .serializers import FarmacoSerializer, EstoqueLocalSerializer, EstoqueLocalCreateSerializer, EstoqueRegionalSerializer, PacienteSerializer, MedicoSerializer, RegistroEntregaSerializer, PostoDistribuicaoSerializer
+from .models import Farmaco, EstoqueLocal, EstoqueRegional, Paciente, Medico, PostoDistribuicao, RegistroEntrega
+from .serializers import FarmacoSerializer, EstoqueLocalSerializer, EstoqueRegionalSerializer, PacienteSerializer, MedicoSerializer, PostoDistribuicaoSerializer, RegistroEntregaCreateSerializer, RegistroEntregaSerializer
 import logging
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -128,10 +129,6 @@ class MedicoDetail(generics.RetrieveAPIView):
     serializer_class = MedicoSerializer
     lookup_field = 'crm'
 
-class RegistroEntregaList(generics.ListCreateAPIView):
-    queryset = RegistroEntrega.objects.all()
-    serializer_class = RegistroEntregaSerializer
-
 class PostoDistribuicaoList(generics.ListCreateAPIView):
     queryset = PostoDistribuicao.objects.all()
     serializer_class = PostoDistribuicaoSerializer
@@ -141,7 +138,23 @@ class PostoDistribuicaoDetail(generics.RetrieveAPIView):
     serializer_class = PostoDistribuicaoSerializer
     lookup_field = 'cnes'
 
+class RegistroEntregaListCreateView(generics.ListCreateAPIView):
+    queryset = RegistroEntrega.objects.all()
+    serializer_class = RegistroEntregaSerializer
 
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return RegistroEntregaCreateSerializer
+        return RegistroEntregaSerializer
+
+    def create(self, request, *args, **kwargs):
+        try:
+            response = super().create(request, *args, **kwargs)
+            logger.info('Registro de entrega criado com sucesso: %s', response.data)
+            return response
+        except Exception as e:
+            logger.error('Erro ao criar registro de entrega: %s', str(e))
+            return Response({'detail': 'Erro ao criar registro de entrega'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
 def CreateFarmacoBatch(request):
