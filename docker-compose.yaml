@@ -64,6 +64,18 @@ services:
     networks:
       - backend_network
 
+  kafka_consumer:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: kafka_consumer
+    depends_on:
+      - kafka
+      - django
+    command: python /app/farmacobackendapp/consumers/consume_deliveries.py
+    networks:
+      - backend_network
+
 # volumes:
 #   zookeeper_data:
 #   kafka_data:

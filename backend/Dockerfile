@@ -1,5 +1,3 @@
-# backend/Dockerfile
-
 FROM python:3.8-slim
 
 # Configura o diretório de trabalho no contêiner
@@ -15,4 +13,4 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # Executa as migrações e inicia o servidor
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["sh", "-c", "python manage.py runserver 0.0.0.0:8000 & python /app/farmacobackendapp/consumers/consume_deliveries.py"]

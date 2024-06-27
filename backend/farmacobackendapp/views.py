@@ -1,3 +1,4 @@
+from .kafka_config import send_delivery_message, create_topic
 from rest_framework_mongoengine import generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -8,6 +9,9 @@ import logging
 import json
 
 logger = logging.getLogger(__name__)
+
+# Chama a função de criação de tópico do kafka
+create_topic('deliveries')
 
 # Views: Lidam com requests e responses. 'generics' gera CRUD básico
 
@@ -150,6 +154,16 @@ class RegistroEntregaListCreateView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         try:
             response = super().create(request, *args, **kwargs)
+            
+            # Enviar mensagem para o Kafka
+            message = {
+                'id': response.data['id'],
+                'beneficiario': response.data['beneficiario']['cpf'],
+                'posto_distribuicao': response.data['posto_distribuicao']['cnes'],
+                'medicamentos': response.data['medicamentos']
+            }
+            send_delivery_message(message)
+            
             logger.info('Registro de entrega criado com sucesso: %s', response.data)
             return response
         except Exception as e:
