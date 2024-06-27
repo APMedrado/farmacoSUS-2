@@ -58,7 +58,7 @@ export default {
         quantidade: this.quantidade
       };
 
-      axios.post('http://localhost:8000/api/estoque-regional/', payload)
+      axios.post('http://localhost:8000/api/estoque-regional/batch/', [payload])
         .then(response => {
           alert('Estoque regional atualizado com sucesso!');
           this.medicamentoSearch = '';

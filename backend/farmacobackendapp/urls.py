@@ -10,6 +10,7 @@ urlpatterns = [
     path('estoque-local/', views.EstoqueLocalList.as_view(), name='estoque-local-list'),
     path('estoque-local/batch/', views.CreateEstoqueLocalBatch, name='create-estoque-local-batch'),
     path('estoque-regional/', views.EstoqueRegionalList.as_view(), name='estoque-regional-list'),
+    path('estoque-regional/batch/', views.CreateEstoqueRegionalBatch, name='create-estoque-regional-batch'),
     path('pacientes/', views.PacienteList.as_view(), name='paciente-list'),
     path('medicos/', views.MedicoList.as_view(), name='medico-list'),
     path('registro-entrega/', views.RegistroEntregaList.as_view(), name='registro-entrega-list'),
