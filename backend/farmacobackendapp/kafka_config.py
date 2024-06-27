@@ -1,4 +1,5 @@
-from confluent_kafka import Producer, Consumer, KafkaException, KafkaAdminClient, NewTopic
+from confluent_kafka import Producer, Consumer, KafkaException
+#from confluent_kafka.admin import KafkaAdminClient, NewTopic
 import logging
 import json
 
