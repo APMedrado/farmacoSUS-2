@@ -41,6 +41,16 @@ services:
     networks:
       - backend_network
 
+  topic-init:
+    image: confluentinc/cp-kafka:7.4.4
+    depends_on:
+      - kafka
+    volumes:
+      - ./backend/create-topics.sh:/app/create-topics.sh
+    entrypoint: sh /app/create-topics.sh
+    networks:
+      - backend_network
+
   django:
     build:
       context: ./backend
@@ -52,22 +62,12 @@ services:
       - ./backend:/app
     depends_on:
       - kafka
+      - topic-init
     networks:
       - backend_network
-
-  kafka_consumer:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: kafka_consumer
-    environment:
-      - DJANGO_SETTINGS_MODULE=farmacobackend.settings
-    depends_on:
-      - kafka
-      - django
-    command: ./wait-for-kafka.sh python /app/farmacobackendapp/consumers/consume_deliveries.py
-    networks:
-      - backend_network
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000 &
+             python manage.py start_consumers"
 
 networks:
   backend_network:

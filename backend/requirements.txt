@@ -2,5 +2,5 @@ Django>=3.0,<4.0
 djangorestframework
 mongoengine
 django-cors-headers
-confluent_kafka==2.0.2
+confluent_kafka>=2.0.2
 django-rest-framework-mongoengine
