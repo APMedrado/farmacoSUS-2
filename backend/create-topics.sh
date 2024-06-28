@@ -8,4 +8,5 @@ done
 # Cria os tópicos necessários
 
 kafka-topics --create --topic estoque_local --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1
+kafka-topics --create --topic low_stock_alert --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1
 # ...

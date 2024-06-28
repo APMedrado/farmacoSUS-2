@@ -1,4 +1,5 @@
 from .models import EstoqueLocal, Farmaco, PostoDistribuicao
+from .kafka_producer import produce_message
 
 def process_message_estoque_local(message):
     try:
@@ -21,6 +22,16 @@ def process_message_estoque_local(message):
             estoque_local.save()
         else:
             print(f'No existing stock entry found for medicamento {medicamento_codigo} and posto {posto_cnes}. Created new entry with default quantity 0.')
+
+        # Verificar se a quantidade está abaixo de 10 e produzir uma mensagem
+        if estoque_local.quantidade < 10:
+            low_stock_message = {
+                'medicamento': medicamento_codigo,
+                'posto_distribuicao': posto_cnes,
+                'quantidade': estoque_local.quantidade
+            }
+            produce_message('low_stock_alert', low_stock_message)
+            print(f'Produced low stock alert message: {low_stock_message}')
 
     except Exception as e:
         print(f'Failed to process message for estoque_local: {e}')
