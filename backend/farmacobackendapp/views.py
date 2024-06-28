@@ -159,10 +159,11 @@ class RegistroEntregaListCreateView(generics.ListCreateAPIView):
             # Produzir mensagem para o Kafka
             if 'medicamentos' in response.data and 'posto_distribuicao' in response.data:
                 for medicamento in response.data['medicamentos']:
-                    if 'codigo_barra' in medicamento and 'quantidade' in medicamento and 'cnes' in response.data['posto_distribuicao']:
+
+                    if 'codigo_barra' in medicamento and 'quantidade' in medicamento:
                         message = {
                             'medicamento': medicamento['codigo_barra'],
-                            'posto_distribuicao': response.data['posto_distribuicao']['cnes'],
+                            'posto_distribuicao': response.data['posto_distribuicao'],
                             'quantidade': medicamento['quantidade']
                         }
                         logger.debug('Produzindo mensagem: %s', message)

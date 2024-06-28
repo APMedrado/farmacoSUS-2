@@ -23,7 +23,6 @@ def consume_messages(topics):
         while True:
             msg = consumer.poll(timeout=1.0)
             if msg is None:
-                logger.info(f"No messages")
                 continue
             if msg.error():
                 if msg.error().code() == KafkaException._PARTITION_EOF:
@@ -35,7 +34,7 @@ def consume_messages(topics):
 
             message = json.loads(msg.value().decode('utf-8'))
             topic = msg.topic()
-            print("oi")
+            
             logger.info(f"Consumed message from topic {topic}: {message}")
 
             if topic == 'estoque_local':
