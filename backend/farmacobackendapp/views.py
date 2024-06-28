@@ -153,14 +153,24 @@ class RegistroEntregaListCreateView(generics.ListCreateAPIView):
             response = super().create(request, *args, **kwargs)
             logger.info('Registro de entrega criado com sucesso: %s', response.data)
             
+            # Adiciona um log para verificar a estrutura de response.data
+            logger.debug('Estrutura de response.data: %s', response.data)
+
             # Produzir mensagem para o Kafka
-            for medicamento in response.data['medicamentos']:
-                message = {
-                    'medicamento': medicamento['codigo_barra'],
-                    'posto_distribuicao': response.data['posto_distribuicao']['cnes'],
-                    'quantidade': medicamento['quantidade']
-                }
-                produce_message('estoque_local', message)
+            if 'medicamentos' in response.data and 'posto_distribuicao' in response.data:
+                for medicamento in response.data['medicamentos']:
+                    if 'codigo_barra' in medicamento and 'quantidade' in medicamento and 'cnes' in response.data['posto_distribuicao']:
+                        message = {
+                            'medicamento': medicamento['codigo_barra'],
+                            'posto_distribuicao': response.data['posto_distribuicao']['cnes'],
+                            'quantidade': medicamento['quantidade']
+                        }
+                        logger.debug('Produzindo mensagem: %s', message)
+                        produce_message('estoque_local', message)
+                    else:
+                        logger.error('Estrutura inesperada em medicamento ou posto_distribuicao: %s', response.data)
+            else:
+                logger.error('Estrutura inesperada em response.data: %s', response.data)
                 
             return response
         except Exception as e:
