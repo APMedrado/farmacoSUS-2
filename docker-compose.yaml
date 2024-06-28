@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   mongo:
     image: mongo
@@ -34,7 +36,7 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://localhost:9093
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9093
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -65,9 +67,7 @@ services:
       - topic-init
     networks:
       - backend_network
-    command: >
-      sh -c "python manage.py runserver 0.0.0.0:8000 &
-             python manage.py start_consumers"
+    entrypoint: sh /app/wait_for_kafka.sh sh -c "python manage.py runserver 0.0.0.0:8000 & python manage.py start_consumers"
 
 networks:
   backend_network:

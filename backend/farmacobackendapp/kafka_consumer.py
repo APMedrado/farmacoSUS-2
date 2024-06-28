@@ -1,5 +1,9 @@
 from confluent_kafka import Consumer, KafkaException
 import json
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 from .process_estoque_local import process_message_estoque_local
 
@@ -7,16 +11,13 @@ conf = {
     'bootstrap.servers': 'kafka:9092',
     'group.id': 'general_consumer_group',
     'auto.offset.reset': 'earliest',
-    'enable.auto.commit': True,
-    'session.timeout.ms': 10000,  # Ajuste de tempo limite de sessão
-    'max.poll.interval.ms': 1000000,  # Ajuste máximo do intervalo de enquete
-    'heartbeat.interval.ms': 10000
 }
 
 consumer = Consumer(conf)
 
 def consume_messages(topics):
     consumer.subscribe(topics)
+    logger.info(f"Subscribed to topics: {', '.join(topics)}")
 
     try:
         while True:
@@ -27,22 +28,21 @@ def consume_messages(topics):
                 if msg.error().code() == KafkaException._PARTITION_EOF:
                     continue
                 else:
-                    print(msg.error())
+                    logger.error(f"Consumer error: {msg.error()}")
                     break
 
             message = json.loads(msg.value().decode('utf-8'))
             topic = msg.topic()
 
-            print(f'Recebida mensagem em {topic}: {message}') # Debugging
+            logger.info(f"Consumed message from topic {topic}: {message}")
 
             if topic == 'estoque_local':
                 process_message_estoque_local(message)
-            # elif topic == 'outro_topico':
-                # processar com outro topico
             else:
-                print(f"Unknown topic: {topic}")
+                logger.warning(f"Unknown topic: {topic}")
 
     except KeyboardInterrupt:
         pass
     finally:
         consumer.close()
+        logger.info("Consumer closed")
