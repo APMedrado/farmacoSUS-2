@@ -1,4 +1,4 @@
-from confluent_kafka import Consumer, KafkaException
+from confluent_kafka import Consumer, KafkaError
 import json
 import logging
 
@@ -28,8 +28,9 @@ def consume_messages(topics):
             if msg is None:
                 continue
             if msg.error():
-                if msg.error().code() == KafkaException._PARTITION_EOF:
-                    logger.info(f"Kafka exception")
+                error_code = msg.error().code()
+                if error_code == KafkaError._PARTITION_EOF:
+                    logger.info("End of partition reached")
                     continue
                 else:
                     logger.error(f"Consumer error: {msg.error()}")
