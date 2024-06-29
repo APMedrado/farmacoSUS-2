@@ -72,7 +72,7 @@ def CreateEstoqueLocalBatch(request):
                            'codigo_barra' : estoque_local.medicamento['codigo_barra'],
                            'produto': estoque_local.medicamento['produto'],
                         },      
-                        'posto_distribuicao' : PostoDistribuicaoSerializer(posto_distribuicao).data,
+                        'posto_distribuicao' : posto_cnes,
                         'quantidade': quantidade    
                     }
                     produce_message('abastecimento_alert', message)

@@ -75,3 +75,14 @@ class LowStockAlert(me.Document):
 
     def __str__(self):
         return f"{self.medicamento} - {self.posto_distribuicao} - {self.quantidade} un - {self.timestamp}"  
+    
+    
+class NotificacaoAbastecimento(me.Document):
+    paciente = me.ReferenceField(Paciente, required=True)
+    farmaco = me.ReferenceField(Farmaco, requered=True)
+    cnes_posto = me.StringField(required=True)
+    
+    def __str__(self):
+        return f"{self.paciente} - {self.farmaco} - {self.cnes}" 
+
+    
