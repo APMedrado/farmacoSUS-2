@@ -11,7 +11,7 @@
         Quaisquer alertas de estoque baixo nos postos de distribuição nessa região serão mostrados aqui.</p>
 
       <div v-if="alerts.length" class="row">
-        <div v-for="alert in alerts" :key="alert.id" class="col-12 col-md-4 mb-4">
+        <div v-for="alert in sortedAlerts" :key="alert.id" class="col-12 col-md-4 mb-4">
           <LowStockAlert :alert="alert" />
         </div>
       </div>
@@ -38,6 +38,31 @@ export default {
   },
   created() {
     this.fetchAlerts();
+    this.startPolling();
+  },
+  beforeDestroy() {
+    this.stopPolling();
+  },
+  computed: {
+    sortedAlerts() {
+      return this.alerts.sort((a, b) => {
+        const statusOrder = {
+          'out of stock': 1,
+          'critical': 2,
+          'low': 3,
+          'attention': 4
+        };
+
+        const statusComparison = statusOrder[a.status] - statusOrder[b.status];
+        if (statusComparison !== 0) {
+          return statusComparison;
+        }
+
+        const timestampA = new Date(a.timestamp);
+        const timestampB = new Date(b.timestamp);
+        return timestampB - timestampA;
+      });
+    }
   },
   methods: {
     fetchAlerts() {
@@ -48,6 +73,12 @@ export default {
         .catch(error => {
           console.error('Erro ao buscar alertas:', error);
         });
+    },
+    startPolling() {
+      this.polling = setInterval(this.fetchAlerts, 10000); // Checa a cada 10 segundos
+    },
+    stopPolling() {
+      clearInterval(this.polling);
     }
   }
 };
