@@ -68,7 +68,7 @@
           <li v-for="(medicamento, index) in form.medicamentos" :key="index" class="list-group-item d-flex justify-content-between align-items-center">
             {{ medicamento.nome }} ({{ medicamento.codigo_barra }}) - {{ medicamento.quantidade }} un
             <div>
-              <input type="number" class="form-control d-inline-block me-2" v-model.number="medicamento.quantidade" min="1" style="width: 80px;">
+              <input type="number" class="form-control d-inline-block me-2" v-model.number="medicamento.quantidade" :min="1" :max="medicamento.maxQuantidade" style="width: 80px;">
               <button type="button" class="btn btn-danger btn-sm" @click="removeMedicamento(index)">Remover</button>
             </div>
           </li>
@@ -182,7 +182,8 @@ export default {
         .then(response => {
           const medicamentoEncontrado = response.data.find(item => item.medicamento.codigo_barra === this.medicamentoSearch);
           if (medicamentoEncontrado) {
-            this.addMedicamento(medicamentoEncontrado.medicamento);
+            medicamentoEncontrado.maxQuantidade = medicamentoEncontrado.quantidade;
+            this.addMedicamento(medicamentoEncontrado.medicamento, medicamentoEncontrado.maxQuantidade);
             this.medicamentoSearchResult = '';
           } else {
             this.medicamentoSearchResult = 'Medicamento não encontrado ou fora de estoque';
@@ -193,9 +194,14 @@ export default {
           this.medicamentoSearchResult = 'Erro ao buscar medicamento';
         });
     },
-    addMedicamento(medicamento) {
+    addMedicamento(medicamento, maxQuantidade) {
       if (medicamento && !this.form.medicamentos.some(m => m.codigo_barra === medicamento.codigo_barra)) {
-        this.form.medicamentos.push({ codigo_barra: medicamento.codigo_barra, nome: medicamento.produto, quantidade: 1 });
+        this.form.medicamentos.push({
+          codigo_barra: medicamento.codigo_barra,
+          nome: medicamento.produto,
+          quantidade: 1,
+          maxQuantidade: maxQuantidade // Armazenar a quantidade máxima disponível
+        });
         this.medicamentoSearch = '';
       }
     },

@@ -66,6 +66,18 @@ services:
     networks:
       - backend_network
     entrypoint: sh /app/wait_for_kafka.sh sh -c "python manage.py runserver 0.0.0.0:8000 & python manage.py start_consumers"
+    
+    frontend:
+      image: node:latest
+      container_name: frontend
+      working_dir: /app/frontend
+      volumes:
+        - ./frontend:/app/frontend
+      ports:
+        - "5025:5173"  # Porta 5025 na VM é mapeada para a porta 5173 do frontend Vue
+      command: npm run dev
+      networks:
+        - backend_network
 
 networks:
   backend_network:
