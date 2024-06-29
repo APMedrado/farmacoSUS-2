@@ -180,7 +180,10 @@ export default {
       const cnes = this.form.postoDistribuicao.cnes;
       axios.get(`http://localhost:8000/api/estoque-local/?posto_distribuicao=${cnes}&medicamento=${this.medicamentoSearch}`)
         .then(response => {
-          const medicamentoEncontrado = response.data.find(item => item.medicamento.codigo_barra === this.medicamentoSearch);
+          const medicamentoEncontrado = response.data.find(item => 
+            item.medicamento.codigo_barra === this.medicamentoSearch &&
+            item.posto_distribuicao === cnes
+          );
           if (medicamentoEncontrado) {
             medicamentoEncontrado.maxQuantidade = medicamentoEncontrado.quantidade;
             this.addMedicamento(medicamentoEncontrado.medicamento, medicamentoEncontrado.maxQuantidade);
