@@ -57,6 +57,7 @@ def CreateEstoqueLocalBatch(request):
                 try:
                     estoque_local = EstoqueLocal.objects.get(medicamento=medicamento, posto_distribuicao=posto_distribuicao)
                     estoque_local.quantidade += quantidade
+                    quantidade =  estoque_local.quantidade
                     estoque_local.save()
                     updated_entries.append(estoque_local)
                 except EstoqueLocal.DoesNotExist:
@@ -64,6 +65,18 @@ def CreateEstoqueLocalBatch(request):
                     estoque_local = EstoqueLocal(medicamento=medicamento, posto_distribuicao=posto_distribuicao, quantidade=quantidade)
                     estoque_local.save()
                     updated_entries.append(estoque_local)
+                
+                if estoque_local:
+                    message = {
+                        'medicamento': {
+                           'codigo_barra' : estoque_local.medicamento['codigo_barra'],
+                           'produto': estoque_local.medicamento['produto'],
+                        },
+                        'posto_distribuicao' : estoque_local.posto_distribuicao,
+                        'quantidade': quantidade
+                    }
+                    produce_message('abastecimento_alert', message)
+                    
 
             except Farmaco.DoesNotExist:
                 return Response({"detail": "Medicamento não encontrado"}, status=status.HTTP_400_BAD_REQUEST)

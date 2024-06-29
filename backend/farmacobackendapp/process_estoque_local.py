@@ -1,6 +1,11 @@
 from .models import EstoqueLocal, Farmaco, PostoDistribuicao
 from .kafka_producer import produce_message
 
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 def process_message_estoque_local(message):
     try:
         medicamento_codigo = message['medicamento']
@@ -9,20 +14,19 @@ def process_message_estoque_local(message):
 
         medicamento = Farmaco.objects.get(codigo_barra=medicamento_codigo)
         posto_distribuicao = PostoDistribuicao.objects.get(cnes=posto_cnes)
-
-        estoque_local, created = EstoqueLocal.objects.get_or_create(
+        
+        estoque_local = EstoqueLocal.objects(
             medicamento=medicamento,
-            posto_distribuicao=posto_distribuicao,
-            defaults={'quantidade': 0}  # Define a quantidade inicial como 0 se criado
-        )
-
-        if not created:
-            # Subtrair a quantidade, garantindo que não fique negativa
+            posto_distribuicao=posto_distribuicao
+        ).first()
+    
+        if estoque_local:
             estoque_local.quantidade = max(estoque_local.quantidade - quantidade, 0)
-            estoque_local.save()
-        else:
-            print(f'No existing stock entry found for medicamento {medicamento_codigo} and posto {posto_cnes}. Created new entry with default quantity 0.')
-
+            medicamento.reload()
+        else :
+            logger.error(f'No existing stock entry found for medicamento {medicamento_codigo} and posto {posto_cnes}.')
+        
+        logger.info(f'quantidade apos retirada: {estoque_local.quantidade}')    
         # Verificar se a quantidade está abaixo de 10 e produzir uma mensagem
         if estoque_local.quantidade < 10:
             low_stock_message = {
@@ -34,4 +38,4 @@ def process_message_estoque_local(message):
             print(f'Produced low stock alert message: {low_stock_message}')
 
     except Exception as e:
-        print(f'Failed to process message for estoque_local: {e}')
+        logger.error(f'Failed to process message for estoque_local: {e}')

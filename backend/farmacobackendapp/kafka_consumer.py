@@ -16,6 +16,9 @@ conf = {
 
 consumer = Consumer(conf)
 
+
+# Função que consome uma mensagem de um tópico
+# A depender do tópico, envia a mensagem para ser processada de forma própria (process_)
 def consume_messages(topics):
     consumer.subscribe(topics)
     logger.info(f"Subscribed to topics: {', '.join(topics)}")
@@ -38,11 +41,16 @@ def consume_messages(topics):
             logger.info(f"Consumed message from topic {topic}: {message}")
 
             if topic == 'estoque_local':
+
                 process_message_estoque_local(message)
             elif topic == 'low_stock_alert':
                 process_message_low_stock_alert(message)
+            elif topic == 'abastecimento_alert':
+                # process_something
+                print("oi")
             else:
                 logger.warning(f"Unknown topic: {topic}")
+
 
     except KeyboardInterrupt:
         pass
