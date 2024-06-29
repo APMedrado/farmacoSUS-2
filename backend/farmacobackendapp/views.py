@@ -3,8 +3,8 @@ from rest_framework_mongoengine import generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Farmaco, EstoqueLocal, EstoqueRegional, Paciente, Medico, PostoDistribuicao, RegistroEntrega
-from .serializers import FarmacoSerializer, EstoqueLocalSerializer, EstoqueRegionalSerializer, PacienteSerializer, MedicoSerializer, PostoDistribuicaoSerializer, RegistroEntregaCreateSerializer, RegistroEntregaSerializer
+from .models import Farmaco, EstoqueLocal, EstoqueRegional, LowStockAlert, Paciente, Medico, PostoDistribuicao, RegistroEntrega
+from .serializers import FarmacoSerializer, EstoqueLocalSerializer, EstoqueRegionalSerializer, LowStockAlertSerializer, PacienteSerializer, MedicoSerializer, PostoDistribuicaoSerializer, RegistroEntregaCreateSerializer, RegistroEntregaSerializer
 import logging
 import json
 
@@ -64,16 +64,16 @@ def CreateEstoqueLocalBatch(request):
                     # Crie uma nova entrada no estoque local
                     estoque_local = EstoqueLocal(medicamento=medicamento, posto_distribuicao=posto_distribuicao, quantidade=quantidade)
                     estoque_local.save()
-                    updated_entries.append(estoque_local)
-                
+                    updated_entries.append(estoque_local)   
+                    
                 if estoque_local:
                     message = {
                         'medicamento': {
                            'codigo_barra' : estoque_local.medicamento['codigo_barra'],
                            'produto': estoque_local.medicamento['produto'],
-                        },
-                        'posto_distribuicao' : estoque_local.posto_distribuicao,
-                        'quantidade': quantidade
+                        },      
+                        'posto_distribuicao' : PostoDistribuicaoSerializer(posto_distribuicao).data,
+                        'quantidade': quantidade    
                     }
                     produce_message('abastecimento_alert', message)
                     
@@ -217,3 +217,8 @@ def CreateFarmacoBatch(request):
         return Response({"errors": errors}, status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response({'nSaved': n_saved}, status=status.HTTP_201_CREATED)
+    
+
+class LowStockAlertList(generics.ListCreateAPIView):
+    queryset = LowStockAlert.objects.all()
+    serializer_class = LowStockAlertSerializer

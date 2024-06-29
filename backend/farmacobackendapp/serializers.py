@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_mongoengine.serializers import DocumentSerializer
-from .models import Farmaco, EstoqueLocal, EstoqueRegional, Paciente, Medico, PostoDistribuicao, RegistroEntrega
+from .models import Farmaco, EstoqueLocal, EstoqueRegional, LowStockAlert, Paciente, Medico, PostoDistribuicao, RegistroEntrega
 
 # Serializers: Úteis para converter entre JSON e objeto do banco de dados
 
@@ -96,4 +96,12 @@ class RegistroEntregaSerializer(DocumentSerializer):
 class RegistroEntregaCreateSerializer(DocumentSerializer):
     class Meta:
         model = RegistroEntrega
+        fields = '__all__'
+        
+class LowStockAlertSerializer(serializers.ModelSerializer):
+    medicamento = FarmacoSerializer()
+    posto_distribuicao = PostoDistribuicaoSerializer()
+
+    class Meta:
+        model = LowStockAlert
         fields = '__all__'

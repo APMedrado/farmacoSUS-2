@@ -22,20 +22,20 @@ def process_message_estoque_local(message):
     
         if estoque_local:
             estoque_local.quantidade = max(estoque_local.quantidade - quantidade, 0)
-            medicamento.reload()
+            estoque_local.save()
         else :
             logger.error(f'No existing stock entry found for medicamento {medicamento_codigo} and posto {posto_cnes}.')
         
         logger.info(f'quantidade apos retirada: {estoque_local.quantidade}')    
         # Verificar se a quantidade está abaixo de 10 e produzir uma mensagem
-        if estoque_local.quantidade < 10:
+        if estoque_local.quantidade < 15:
             low_stock_message = {
                 'medicamento': medicamento_codigo,
                 'posto_distribuicao': posto_cnes,
                 'quantidade': estoque_local.quantidade
             }
             produce_message('low_stock_alert', low_stock_message)
-            print(f'Produced low stock alert message: {low_stock_message}')
+            (f'Produced low stock alert message: {low_stock_message}')
 
     except Exception as e:
         logger.error(f'Failed to process message for estoque_local: {e}')

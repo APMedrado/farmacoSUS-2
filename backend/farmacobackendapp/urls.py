@@ -18,4 +18,5 @@ urlpatterns = [
     path('postos-distribuicao/', views.PostoDistribuicaoList.as_view(), name='posto-distribuicao-list'),
     path('postos-distribuicao/<str:cnes>/', views.PostoDistribuicaoDetail.as_view(), name='posto-distribuicao-detail'),
     path('registros-entregas/', views.RegistroEntregaListCreateView.as_view(), name='registro-entrega-list-create'),
+    path('estoque-regional/alerts/', views.LowStockAlertList.as_view(), name='alerts-stocks-list'),
 ]
