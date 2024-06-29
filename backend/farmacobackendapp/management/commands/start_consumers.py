@@ -9,7 +9,7 @@ class Command(BaseCommand):
     help = 'Starts multiple Kafka consumers'
 
     def handle(self, *args, **kwargs):
-        topics = ['estoque_local']  # Adicionar mais tópicos aqui conforme necessário
+        topics = ['estoque_local', 'low_stock_alert', 'abastecimentos_alert']  # Adicionar mais tópicos aqui conforme necessário
         self.stdout.write(f"Starting consumers for topics: {', '.join(topics)}")
         logger.info(f"Starting consumers for topics: {', '.join(topics)}")
-        consume_messages(topics)
+        consume_messages(topics)    

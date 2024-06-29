@@ -13,6 +13,8 @@ def delivery_report(err, msg):
     else:
         print(f'Message delivered to {msg.topic()} [{msg.partition()}]')
 
+
+# Função que envia uma mensagem para um tópico 
 def produce_message(topic, message):
     try:
         print(f'Producing message to topic {topic}: {message}')
