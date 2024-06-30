@@ -4,7 +4,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
+from .process_notify_email import process_notify_email
 from .process_estoque_local import process_message_estoque_local
 from .process_low_stock_alert import process_message_low_stock_alert
 from .process_regional_supplying_actions import process_message_regional_supplying_actions
@@ -48,7 +48,7 @@ def consume_messages(topics):
             elif topic == 'low_stock_alert':
                 process_message_low_stock_alert(message)
             elif topic == 'abastecimento_alert':
-                pass
+                process_notify_email(message)
             elif topic == 'regional_supplying_actions':
                 process_message_regional_supplying_actions(message)
             else:
