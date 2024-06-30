@@ -98,7 +98,7 @@ class RegistroEntregaCreateSerializer(DocumentSerializer):
         model = RegistroEntrega
         fields = '__all__'
         
-class LowStockAlertSerializer(serializers.ModelSerializer):
+class LowStockAlertSerializer(DocumentSerializer):
     medicamento = FarmacoSerializer()
     posto_distribuicao = PostoDistribuicaoSerializer()
 
