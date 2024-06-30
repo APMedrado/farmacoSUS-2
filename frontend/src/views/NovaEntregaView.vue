@@ -68,7 +68,11 @@
           <li v-for="(medicamento, index) in form.medicamentos" :key="index" class="list-group-item d-flex justify-content-between align-items-center">
             {{ medicamento.nome }} ({{ medicamento.codigo_barra }}) - {{ medicamento.quantidade }} un
             <div>
+<<<<<<< HEAD
               <input type="number" class="form-control d-inline-block me-2" v-model.number="medicamento.quantidade" min="1" style="width: 80px;">
+=======
+              <input type="number" class="form-control d-inline-block me-2" v-model.number="medicamento.quantidade" :min="1" style="width: 80px;">
+>>>>>>> 213604b7a9446b15fe9aeca8768eeea66e1b1f6a
               <button type="button" class="btn btn-danger btn-sm" @click="removeMedicamento(index)">Remover</button>
             </div>
           </li>

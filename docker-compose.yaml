@@ -65,7 +65,7 @@ services:
       - topic-init
     networks:
       - backend_network
-    entrypoint: sh /app/wait_for_kafka.sh sh -c "python manage.py runserver 0.0.0.0:8000 & python manage.py start_consumers"
+    entrypoint: sh /app/wait-for-kafka.sh sh -c "python manage.py runserver 0.0.0.0:8000 & python manage.py start_consumers"
     
 #    frontend:
 #      image: node:latest
