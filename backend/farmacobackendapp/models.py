@@ -70,11 +70,11 @@ class LowStockAlert(me.Document):
     medicamento = me.ReferenceField(Farmaco, required=True)
     posto_distribuicao = me.ReferenceField(PostoDistribuicao, required=True)
     quantidade = me.IntField(required=True)
-    timestamp = me.DateTimeField(required=True, auto_now_add=True)
+    timestamp = me.DateTimeField(required=True)
     status = me.StringField(required=True, max_length=100)
 
     def __str__(self):
-        return f"{self.medicamento} - {self.posto_distribuicao} - {self.quantidade} un - {self.timestamp}"  
+        return f"{self.medicamento} - {self.posto_distribuicao} - {self.quantidade}"  
     
     
 class NotificacaoAbastecimento(me.Document):

@@ -1,4 +1,5 @@
 from .models import EstoqueLocal, Farmaco, PostoDistribuicao, LowStockAlert
+from datetime import datetime
 import logging
 
 # Configurar o logger
@@ -11,18 +12,23 @@ def send_notification(message):
 
 def log_low_stock_alert(medicamento, posto_distribuicao, quantidade, status):
     # Registrar o alerta de baixo estoque no banco de dados
+    logger.error("here")
+    logger.error(f'medicamento: {medicamento}, posto: {posto_distribuicao}, quantidade: {quantidade}, status: {status}')
     
-    alert = LowStockAlert.objects.get(medicamento = medicamento, posto_distribuicao = posto_distribuicao)
-    if alert:
+    try: 
+        logger.info("problema aqui?")
+        alert = LowStockAlert.objects.get(medicamento = medicamento, posto_distribuicao = posto_distribuicao)
         alert.quantidade =  quantidade
         alert.status = status   
-    else: 
+    except LowStockAlert.DoesNotExist: 
         alert = LowStockAlert(
             medicamento=medicamento,
             posto_distribuicao =posto_distribuicao,
             quantidade = quantidade,
-            status = status
+            status = status,
+            timestamp = datetime.now()
         )
+        
     alert.save()
     logger.info(f"Low stock alert logged: {alert}")
 
