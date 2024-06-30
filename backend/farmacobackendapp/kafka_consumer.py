@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 from .process_estoque_local import process_message_estoque_local
 from .process_low_stock_alert import process_message_low_stock_alert
+from .process_regional_supplying_actions import process_message_regional_supplying_actions
 
 conf = {
     'bootstrap.servers': 'kafka:9092',
@@ -47,8 +48,9 @@ def consume_messages(topics):
             elif topic == 'low_stock_alert':
                 process_message_low_stock_alert(message)
             elif topic == 'abastecimento_alert':
-                # process_something
-                print("oi")
+                pass
+            elif topic == 'regional_supplying_actions':
+                process_message_regional_supplying_actions(message)
             else:
                 logger.warning(f"Unknown topic: {topic}")
 

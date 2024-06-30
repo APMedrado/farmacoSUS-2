@@ -87,6 +87,28 @@ def CreateEstoqueLocalBatch(request):
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
     return Response({"detail": "Invalid data format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['POST'])
+def confirmar_abastecimento(request):
+    medicamento_codigo = request.data.get('medicamento_codigo')
+    posto_cnes = request.data.get('posto_cnes')
+
+    if not medicamento_codigo or not posto_cnes:
+        return Response({"detail": "Dados insuficientes"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        estoque_local = EstoqueLocal.objects.get(medicamento__codigo_barra=medicamento_codigo, posto_distribuicao__cnes=posto_cnes)
+        quantidade_a_receber = estoque_local.quantidade_a_receber
+
+        estoque_local.quantidade += quantidade_a_receber
+        estoque_local.quantidade_a_receber = 0
+        estoque_local.save()
+
+        return Response({"detail": "Abastecimento confirmado com sucesso"}, status=status.HTTP_200_OK)
+    except EstoqueLocal.DoesNotExist:
+        return Response({"detail": "Estoque local não encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 class EstoqueRegionalList(generics.ListCreateAPIView):
     queryset = EstoqueRegional.objects.all()
     serializer_class = EstoqueRegionalSerializer
@@ -222,3 +244,23 @@ def CreateFarmacoBatch(request):
 class LowStockAlertList(generics.ListCreateAPIView):
     queryset = LowStockAlert.objects.all()
     serializer_class = LowStockAlertSerializer
+
+@api_view(['POST'])
+def enviar_abastecimento(request):
+    medicamento_codigo = request.data.get('medicamento_codigo')
+    posto_cnes = request.data.get('posto_cnes')
+    quantidade = request.data.get('quantidade')
+
+    if not medicamento_codigo or not posto_cnes or not quantidade:
+        return Response({"detail": "Dados insuficientes"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        message = {
+            'medicamento_codigo': medicamento_codigo,
+            'posto_cnes': posto_cnes,
+            'quantidade': quantidade
+        }
+        produce_message('regional_supplying_actions', message)
+        return Response({"detail": "Mensagem de abastecimento enviada com sucesso"}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -8,7 +8,9 @@
           <th scope="col">Princípio Ativo</th>
           <th scope="col">Laboratório</th>
           <th scope="col">Quantidade</th>
+          <th scope="col">Quantidade a Receber</th>
           <th scope="col">Posto de Distribuição</th>
+          <th scope="col">Ações</th>
         </tr>
       </thead>
       <tbody>
@@ -18,7 +20,11 @@
           <td>{{ item.medicamento.principio_ativo }}</td>
           <td>{{ item.medicamento.laboratorio }}</td>
           <td>{{ item.quantidade }}</td>
+          <td>{{ item.quantidade_a_receber }}</td>
           <td>{{ item.posto_distribuicao.nome }}</td>
+          <td>
+            <button class="btn btn-success" @click="confirmarAbastecimento(item)">Abastecimento Feito</button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -52,6 +58,21 @@ export default {
         })
         .catch(error => {
           console.error('Error fetching data: ', error);
+        });
+    },
+    confirmarAbastecimento(item) {
+      const data = {
+        medicamento_codigo: item.medicamento.codigo_barra,
+        posto_cnes: item.posto_distribuicao.cnes
+      };
+      axios.post('http://localhost:8000/estoque-local/confirmar-abastecimento/', data)
+        .then(response => {
+          alert('Abastecimento confirmado com sucesso!');
+          this.fetchFarmacos(this.postoId);
+        })
+        .catch(error => {
+          console.error('Erro ao confirmar abastecimento:', error);
+          alert('Erro ao confirmar abastecimento');
         });
     }
   }

@@ -24,6 +24,7 @@ class PostoDistribuicao(me.Document):
 class EstoqueLocal(me.Document):
     medicamento = me.ReferenceField(Farmaco, required=True)
     quantidade = me.IntField(required=True)
+    quantidade_a_receber = me.IntField(default=0)
     posto_distribuicao = me.ReferenceField(PostoDistribuicao, required=True)
 
     def __str__(self):

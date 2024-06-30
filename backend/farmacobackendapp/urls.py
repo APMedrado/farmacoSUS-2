@@ -6,8 +6,11 @@ from . import views
 urlpatterns = [
     path('estoque-local/', views.EstoqueLocalList.as_view(), name='estoque-local-list'),
     path('estoque-local/batch/', views.CreateEstoqueLocalBatch, name='create-estoque-local-batch'),
+    path('estoque-local/confirmar-abastecimento/', views.confirmar_abastecimento, name='confirmar-abastecimento'),
     path('estoque-regional/', views.EstoqueRegionalList.as_view(), name='estoque-regional-list'),
+    path('estoque-regional/alerts/', views.LowStockAlertList.as_view(), name='alerts-stocks-list'),
     path('estoque-regional/batch/', views.CreateEstoqueRegionalBatch, name='create-estoque-regional-batch'),
+    path('estoque-local/enviar-abastecimento/', views.enviar_abastecimento, name='enviar-abastecimento'),
     path('farmacos/', views.FarmacoList.as_view(), name='farmaco-list'),
     path('farmacos/batch/', views.CreateFarmacoBatch, name='create-farmaco-batch'),
     path('farmacos/<str:codigo_barra>/', views.FarmacoDetail.as_view(), name='farmaco-detail'),
@@ -18,5 +21,4 @@ urlpatterns = [
     path('postos-distribuicao/', views.PostoDistribuicaoList.as_view(), name='posto-distribuicao-list'),
     path('postos-distribuicao/<str:cnes>/', views.PostoDistribuicaoDetail.as_view(), name='posto-distribuicao-detail'),
     path('registros-entregas/', views.RegistroEntregaListCreateView.as_view(), name='registro-entrega-list-create'),
-    path('estoque-regional/alerts/', views.LowStockAlertList.as_view(), name='alerts-stocks-list'),
 ]
