@@ -59,7 +59,7 @@ export default {
       };
 
       try {
-        const response = await axios.post('http://localhost:8000/api/farmacos/', novoFarmaco);
+        const response = await axios.post('http://andromeda.lasdpc.icmc.usp.br:5025/api/farmacos/', novoFarmaco);
         console.log(response.data);
         alert('Fármaco adicionado com sucesso!');
       } catch (error) {

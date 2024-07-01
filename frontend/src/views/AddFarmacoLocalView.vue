@@ -68,7 +68,7 @@ export default {
   methods: {
     async searchPostoDistribuicao() {
       try {
-        const response = await axios.get(`http://localhost:8000/api/postos-distribuicao/${this.postoDistribuicaoSearch}/`);
+        const response = await axios.get(`http://andromeda.lasdpc.icmc.usp.br:5025/api/postos-distribuicao/${this.postoDistribuicaoSearch}/`);
         this.postoDistribuicaoInfo = response.data;
         this.form.postoDistribuicao = response.data.cnes;
         this.postoDistribuicaoSearchResult = '';
@@ -79,7 +79,7 @@ export default {
     },
     async searchMedicamento() {
       try {
-        const response = await axios.get(`http://localhost:8000/api/farmacos/${this.medicamentoSearch}`);
+        const response = await axios.get(`http://andromeda.lasdpc.icmc.usp.br:5025/api/farmacos/${this.medicamentoSearch}`);
         this.addMedicamento(response.data);
         this.medicamentoSearchResult = '';
       } catch (error) {
@@ -105,7 +105,7 @@ export default {
           posto_distribuicao: this.form.postoDistribuicao
         }));
 
-        await axios.post('http://localhost:8000/api/estoque-local/batch/', estoqueData);
+        await axios.post('http://andromeda.lasdpc.icmc.usp.br:5025/api/estoque-local/batch/', estoqueData);
 
         // Limpar o formulário após o envio
         this.form = {

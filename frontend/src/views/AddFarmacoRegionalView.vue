@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     searchMedicamento() {
-      axios.get(`http://localhost:8000/api/farmacos/${this.medicamentoSearch}/`)
+      axios.get(`http://andromeda.lasdpc.icmc.usp.br:5025/api/farmacos/${this.medicamentoSearch}/`)
         .then(response => {
           this.medicamentoInfo = response.data;
           this.medicamentoSearchResult = '';
@@ -58,7 +58,7 @@ export default {
         quantidade: this.quantidade
       };
 
-      axios.post('http://localhost:8000/api/estoque-regional/batch/', [payload])
+      axios.post('http://andromeda.lasdpc.icmc.usp.br:5025/api/estoque-regional/batch/', [payload])
         .then(response => {
           alert('Estoque regional atualizado com sucesso!');
           this.medicamentoSearch = '';

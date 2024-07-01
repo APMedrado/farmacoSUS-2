@@ -54,7 +54,7 @@ export default {
         posto_cnes: this.alert.posto_distribuicao.cnes,
         quantidade: this.quantidade
       };
-      axios.post('http://localhost:8000/estoque-local/enviar-abastecimento/', data)
+      axios.post('http://andromeda.lasdpc.icmc.usp.br:5025/api/estoque-local/enviar-abastecimento/', data)
         .then(response => {
           alert('Abastecimento enviado com sucesso!');
         })

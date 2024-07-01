@@ -41,7 +41,7 @@ export default {
         alert('Por favor, carregue um arquivo JSON válido.');
         return;
       }
-      axios.post('http://localhost:8000/api/farmacos/batch/', this.farmacosJson)
+      axios.post('http://andromeda.lasdpc.icmc.usp.br:5025/api/farmacos/batch/', this.farmacosJson)
         .then(response => {
           alert('Fármacos cadastrados com sucesso!');
         })

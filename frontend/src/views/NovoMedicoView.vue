@@ -47,7 +47,7 @@
         };
   
         try {
-          const response = await axios.post('http://localhost:8000/api/medicos/', novoMedico);
+          const response = await axios.post('http://andromeda.lasdpc.icmc.usp.br:5025/api/medicos/', novoMedico);
           console.log(response.data);
           alert('Médico adicionado com sucesso!');
         } catch (error) {

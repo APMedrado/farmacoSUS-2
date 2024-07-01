@@ -138,7 +138,7 @@ export default {
     },
     searchBeneficiario() {
       const cpfUnformatted = this.beneficiarioSearch.replace(/\D/g, '');
-      axios.get(`http://localhost:8000/api/pacientes/${cpfUnformatted}/`)
+      axios.get(`http://andromeda.lasdpc.icmc.usp.br:5025/api/pacientes/${cpfUnformatted}/`)
         .then(response => {
           this.beneficiarioInfo = response.data;
           this.form.beneficiario = cpfUnformatted;
@@ -151,7 +151,7 @@ export default {
         });
     },
     searchPostoDistribuicao() {
-      axios.get(`http://localhost:8000/api/postos-distribuicao/${this.postoDistribuicaoSearch}/`)
+      axios.get(`http://andromeda.lasdpc.icmc.usp.br:5025/api/postos-distribuicao/${this.postoDistribuicaoSearch}/`)
         .then(response => {
           this.form.postoDistribuicao = response.data;
           this.postoDistribuicaoSearchResult = '';
@@ -164,7 +164,7 @@ export default {
         });
     },
     searchMedico() {
-      axios.get(`http://localhost:8000/api/medicos/${this.medicoSearch}/`)
+      axios.get(`http://andromeda.lasdpc.icmc.usp.br:5025/api/medicos/${this.medicoSearch}/`)
         .then(response => {
           this.medicoInfo = response.data;
           this.form.medico = this.medicoSearch;
@@ -182,7 +182,7 @@ export default {
         return;
       }
       const cnes = this.form.postoDistribuicao.cnes;
-      axios.get(`http://localhost:8000/api/estoque-local/?posto_distribuicao=${cnes}&medicamento=${this.medicamentoSearch}`)
+      axios.get(`http://andromeda.lasdpc.icmc.usp.br:5025/api/estoque-local/?posto_distribuicao=${cnes}&medicamento=${this.medicamentoSearch}`)
         .then(response => {
           const medicamentoEncontrado = response.data.find(item => item.medicamento.codigo_barra === this.medicamentoSearch);
           if (medicamentoEncontrado) {
@@ -219,7 +219,7 @@ export default {
         }))
       };
 
-      axios.post('http://localhost:8000/api/registros-entregas/', entregaData)
+      axios.post('http://andromeda.lasdpc.icmc.usp.br:5025/api/registros-entregas/', entregaData)
         .then(response => {
           alert('Entrega registrada com sucesso!');
           this.resetForm();

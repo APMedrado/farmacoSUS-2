@@ -73,7 +73,7 @@ export default {
       };
 
       try {
-        const response = await axios.post('http://localhost:8000/api/pacientes/', novoPaciente);
+        const response = await axios.post('http://andromeda.lasdpc.icmc.usp.br:5025/api/pacientes/', novoPaciente);
         console.log(response.data);
         alert('Paciente adicionado com sucesso!');
       } catch (error) {

@@ -23,7 +23,7 @@
           <td>{{ item.quantidade_a_receber }}</td>
           <td>{{ item.posto_distribuicao.nome }}</td>
           <td>
-            <button class="btn btn-success" @click="confirmarAbastecimento(item)">Abastecimento Feito</button>
+            <button class="btn btn-success" @click="confirmar Abastecimento(item)">Abastecimento Feito</button>
           </td>
         </tr>
       </tbody>
@@ -49,9 +49,9 @@ export default {
   mounted() {
     this.fetchFarmacos(this.postoId);
   },
-  methods: {
+  methods: {  
     fetchFarmacos(postoId) {
-      const url = !postoId ? 'http://localhost:8000/api/estoque-local/' : `http://localhost:8000/api/estoque-local/?posto_distribuicao=${postoId}`;
+      const url = !postoId ? 'http://andromeda.lasdpc.icmc.usp.br:5025/api/estoque-local/' : `http://andromeda.lasdpc.icmc.usp.br:5025/api/estoque-local/?posto_distribuicao=${postoId}`;
       axios.get(url)
         .then(response => {
           this.farmacos = response.data;
@@ -65,7 +65,7 @@ export default {
         medicamento_codigo: item.medicamento.codigo_barra,
         posto_cnes: item.posto_distribuicao.cnes
       };
-      axios.post('http://localhost:8000/estoque-local/confirmar-abastecimento/', data)
+      axios.post('http://andromeda.lasdpc.icmc.usp.br:5025/api/estoque-local/confirmar-abastecimento/', data)
         .then(response => {
           alert('Abastecimento confirmado com sucesso!');
           this.fetchFarmacos(this.postoId);

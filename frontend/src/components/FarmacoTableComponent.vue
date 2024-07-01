@@ -40,7 +40,7 @@ export default {
   },
   methods: {
     fetchFarmacos() {
-      axios.get('http://localhost:8000/api/farmacos/')
+      axios.get('http://andromeda.lasdpc.icmc.usp.br:5025/api/farmacos/')
         .then(response => {
           this.farmacos = response.data;
           console.log(this.farmacos[0]);
@@ -53,7 +53,7 @@ export default {
       // Lógica de redirecionamento ou exibição de modal para edição
     },
     deleteFarmaco(codigoBarra) {
-      axios.delete(`http://localhost:8000/api/farmacos/${codigoBarra}`)
+      axios.delete(`http://andromeda.lasdpc.icmc.usp.br:5025/api/farmacos/${codigoBarra}`)
         .then(() => {
           this.farmacos = this.farmacos.filter(f => f.codigo_barra !== codigoBarra);
           alert('Fármaco deletado com sucesso!');

@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     fetchFarmacos() {
-      const url = 'http://localhost:8000/api/estoque-regional/';
+      const url = 'http://andromeda.lasdpc.icmc.usp.br:5025/api/estoque-regional/';
       axios.get(url)
         .then(response => {
           this.farmacos = response.data;

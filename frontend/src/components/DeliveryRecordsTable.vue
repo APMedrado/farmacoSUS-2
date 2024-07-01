@@ -43,7 +43,7 @@ export default {
   },
   methods: {
     fetchRegistros() {
-      axios.get('http://localhost:8000/api/registros-entregas/')
+      axios.get('http://andromeda.lasdpc.icmc.usp.br:5025/api/registros-entregas/')
         .then(response => {
           this.registros = response.data;
         })

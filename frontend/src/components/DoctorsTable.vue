@@ -35,7 +35,7 @@
     },
     methods: {
       fetchMedicos() {
-        axios.get('http://localhost:8000/api/medicos/')
+        axios.get('http://andromeda.lasdpc.icmc.usp.br:5025/api/medicos/')
           .then(response => {
             this.medicos = response.data;
           })

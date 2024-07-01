@@ -66,7 +66,7 @@ export default {
   },
   methods: {
     fetchAlerts() {
-      axios.get('http://localhost:8000/estoque-regional/alerts/')
+      axios.get('http://andromeda.lasdpc.icmc.usp.br:5025/api/estoque-regional/alerts/')
         .then(response => {
           this.alerts = response.data;
         })

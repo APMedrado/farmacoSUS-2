@@ -42,7 +42,7 @@ export default {
   },
   methods: {
     fetchPosto() {
-      axios.get(`http://localhost:8000/api/postos-distribuicao/${this.cnes}/`)
+      axios.get(`http://andromeda.lasdpc.icmc.usp.br:5025/api/postos-distribuicao/${this.cnes}/`)
         .then(response => {
           this.selectedPosto = response.data;
           this.selectedPostoId = response.data.cnes;
